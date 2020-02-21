@@ -72,12 +72,12 @@
   }
 */
 var myLanguage = (function(){
-var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3],$V1=[1,5],$V2=[1,4],$V3=[1,6],$V4=[1,7],$V5=[1,8],$V6=[1,10],$V7=[1,11],$V8=[1,12],$V9=[1,13],$Va=[1,14],$Vb=[5,6,10,12,13,14],$Vc=[5,10,12,13];
+var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3],$V1=[1,5],$V2=[1,4],$V3=[1,6],$V4=[1,7],$V5=[1,8],$V6=[1,10],$V7=[1,11],$V8=[1,12],$V9=[1,13],$Va=[1,14],$Vb=[1,15],$Vc=[5,6,7,11,13,14,15],$Vd=[5,11,13,14];
 var parser = {trace: function trace () { },
 yy: {},
-symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"+":6,"FUNCTION":7,"VARIABLE":8,"FUNCTION-ARGUMENT":9,"}":10,"NUMBER":11,";":12,"{":13,"=":14,"STRING":15,"CONSOLE":16,"RETURN":17,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",6:"+",7:"FUNCTION",8:"VARIABLE",9:"FUNCTION-ARGUMENT",10:"}",11:"NUMBER",12:";",13:"{",14:"=",15:"STRING",16:"CONSOLE",17:"RETURN"},
-productions_: [0,[3,2],[4,3],[4,3],[4,2],[4,1],[4,1],[4,3],[4,3],[4,3],[4,1],[4,2],[4,2],[4,3]],
+symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"+":6,"-":7,"FUNCTION":8,"VARIABLE":9,"FUNCTION-ARGUMENT":10,"}":11,"NUMBER":12,";":13,"{":14,"=":15,"STRING":16,"CONSOLE":17,"RETURN":18,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",6:"+",7:"-",8:"FUNCTION",9:"VARIABLE",10:"FUNCTION-ARGUMENT",11:"}",12:"NUMBER",13:";",14:"{",15:"=",16:"STRING",17:"CONSOLE",18:"RETURN"},
+productions_: [0,[3,2],[4,3],[4,3],[4,3],[4,2],[4,1],[4,1],[4,3],[4,3],[4,3],[4,1],[4,2],[4,2],[4,3]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -87,45 +87,76 @@ case 1:
 return $$[$0-1];
 break;
 case 2:
-this.$ = $$[$0-2] + $$[$0]
+if(system.currentFunction) {
+        const currentFunctionDetails = system.functionDetail[system.currentFunction].values;
+        const val1 =  !currentFunctionDetails[$$[$0-2]] ? $$[$0-2] : currentFunctionDetails[$$[$0-2]];
+        const val2 =  !currentFunctionDetails[$$[$0]] ? $$[$0] : currentFunctionDetails[$$[$0]];
+         this.$ = val1+val2;
+        }
+        else
+        this.$ = $$[$0-2]+$$[$0]
+      
 break;
 case 3:
+if(system.currentFunction) {
+        const currentFunctionDetails = system.functionDetail[system.currentFunction].values;
+        const val1 =  currentFunctionDetails[$$[$0-2]];
+        const val2 =  currentFunctionDetails[$$[$0]];
+         this.$ = val1-val2;
+        }
+        else
+        this.$ = $$[$0-2]-$$[$0]
+      
+break;
+case 4:
 
-      system.functionDetail = {name: $$[$0-1]}
+      system.functionDetail = {...system.functionDetail, [$$[$0-1]]: {}}
+      system.currentFunction = $$[$0-1];
       system.isFunctionPresent = true;
     
 break;
-case 5:
+case 6:
 this.$ = Number(yytext)
 break;
-case 6:
+case 7:
 if(system.values[$$[$0]]) this.$ = system.values[$$[$0]]
 break;
-case 9:
- system.values[$$[$0-2]] = $$[$0]; this.$ = $$[$0] 
-break;
 case 10:
-this.$ = $$[$0];
+if(system.currentFunction)
+    {
+      const {currentFunction} = system;
+      system.functionDetail[currentFunction].values = {...system.functionDetail[currentFunction].values, [$$[$0-2]]  : $$[$0]}
+    }
+    else
+      system.values[$$[$0-2]] = $$[$0]; this.$ = $$[$0] 
 break;
 case 11:
-if((!system.isFunctionPresent) ||  (system.isFunctionPresent && system.isFunctionCalled)) 
-      {
-        console.log($$[$0])
-      }
-    
+this.$ = $$[$0];
 break;
 case 12:
- 
-      this.$ = system.functionDetail.result;
-      system.isFunctionCalled = true;
+
+      const {isFunctionPresent, isFunctionCalled} = system;
+      if((!isFunctionPresent) || (isFunctionPresent && isFunctionCalled)) 
+      console.log($$[$0])
     
 break;
 case 13:
- system.functionDetail.result = $$[$0-1]
+
+      system.isFunctionCalled = true;
+      this.$ = system.functionDetail[$$[$0-1]].result;
+
+    
+break;
+case 14:
+ 
+      const {currentFunction} = system;
+      system.functionDetail[currentFunction].result = $$[$0-1];
+      system.currentFunction = "";
+      
 break;
 }
 },
-table: [{3:1,4:2,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},{1:[3]},{5:[1,9],6:$V6,10:$V7,12:$V8,13:$V9,14:$Va},{8:[1,15]},o($Vb,[2,5]),o($Vb,[2,6],{9:[1,16]}),o($Vb,[2,10]),{4:17,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},{4:18,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},{1:[2,1]},{4:19,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},o($Vb,[2,4]),{4:20,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},{4:21,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},{4:22,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5},{9:[1,23]},o($Vb,[2,12]),o($Vc,[2,11],{6:$V6,14:$Va}),{6:$V6,10:$V7,12:[1,24],13:$V9,14:$Va},o($Vb,[2,2]),o($Vc,[2,7],{6:$V6,14:$Va}),o([5,10,13],[2,8],{6:$V6,12:$V8,14:$Va}),o([5,10,12,13,14],[2,9],{6:$V6}),o($Vb,[2,3]),o($Vb,[2,13],{4:20,7:$V0,8:$V1,11:$V2,15:$V3,16:$V4,17:$V5})],
+table: [{3:1,4:2,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{1:[3]},{5:[1,9],6:$V6,7:$V7,11:$V8,13:$V9,14:$Va,15:$Vb},{9:[1,16]},o($Vc,[2,6]),o($Vc,[2,7],{10:[1,17]}),o($Vc,[2,11]),{4:18,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{4:19,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{1:[2,1]},{4:20,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{4:21,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},o($Vc,[2,5]),{4:22,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{4:23,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{4:24,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5},{10:[1,25]},o($Vc,[2,13]),o($Vd,[2,12],{6:$V6,7:$V7,15:$Vb}),{6:$V6,7:$V7,11:$V8,13:[1,26],14:$Va,15:$Vb},o($Vc,[2,2]),o($Vc,[2,3]),o($Vd,[2,8],{6:$V6,7:$V7,15:$Vb}),o([5,11,14],[2,9],{6:$V6,7:$V7,13:$V9,15:$Vb}),o([5,11,13,14,15],[2,10],{6:$V6,7:$V7}),o($Vc,[2,4]),o($Vc,[2,14],{4:22,8:$V0,9:$V1,12:$V2,16:$V3,17:$V4,18:$V5})],
 defaultActions: {9:[2,1]},
 parseError: function parseError (str, hash) {
     if (hash.recoverable) {
@@ -277,7 +308,8 @@ parse: function parse(input) {
 let system = {
   values: {},
   isFunctionPresent: false,
-  isFunctionCalled: false
+  isFunctionCalled: false,
+  currentFunction: ""
 };
 
 /* generated by jison-lex 0.3.4 */
@@ -624,24 +656,26 @@ case 6:return "}"
 break;
 case 7:return "STRING"
 break;
-case 8:return 8
+case 8:return 9
 break;
-case 9:return 11
+case 9:return 12
 break;
 case 10:return 6
 break;
-case 11:return 14
+case 11:return 7
 break;
-case 12:return 5
+case 12:return 15
 break;
-case 13:return "{"
+case 13:return 5
 break;
-case 14:return 12
+case 14:return "{"
+break;
+case 15:return 13
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:let\b)/,/^(?:fn\b)/,/^(?:print\b)/,/^(?:return\b)/,/^(?:\([a-zA-Z\b]*\))/,/^(?:\})/,/^(?:"[a-zA-Z]+\b")/,/^(?:[a-zA-Z]+\b)/,/^(?:[0-9]+(\.[0-9]+)?\b)/,/^(?:\+)/,/^(?:=)/,/^(?:$)/,/^(?:\{)/,/^(?:;)/],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],"inclusive":true}}
+rules: [/^(?:\s+)/,/^(?:let\b)/,/^(?:fn\b)/,/^(?:print\b)/,/^(?:return\b)/,/^(?:\([a-zA-Z\b]*\))/,/^(?:\})/,/^(?:"[a-zA-Z]+\b")/,/^(?:[a-zA-Z]+\b)/,/^(?:[0-9]+(\.[0-9]+)?\b)/,/^(?:\+)/,/^(?:-)/,/^(?:=)/,/^(?:$)/,/^(?:\{)/,/^(?:;)/],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"inclusive":true}}
 });
 return lexer;
 })();

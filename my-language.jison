@@ -2,7 +2,8 @@
 let system = {
   values: {},
   isFunctionPresent: false,
-  isFunctionCalled: false
+  isFunctionCalled: false,
+  currentFunction: ""
 };
 
 %}
@@ -17,10 +18,11 @@ let system = {
 "return"              return "RETURN"
 \([a-zA-Z\b]*\)       return "FUNCTION-ARGUMENT"
 "}"                   return "}"
-\"[a-zA-Z]+\b\"        return "STRING"
+\"[a-zA-Z]+\b\"       return "STRING"
 [a-zA-Z]+\b           return 'VARIABLE'
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
 "+"                   return '+'
+"-"                   return '-'
 "="                   return '='
 <<EOF>>               return 'EOF'
 "{"                   return "{"
@@ -36,7 +38,7 @@ let system = {
 %left STRING
 %left VARIABLE
 %left '='
-%left '+'
+%left '+' '-'
 %left FUNCTION
 
 %%
@@ -49,11 +51,31 @@ expressions
 e
 
   : e '+' e
-      {$$ = $1 + $3}
+      {if(system.currentFunction) {
+        const currentFunctionDetails = system.functionDetail[system.currentFunction].values;
+        const val1 =  !currentFunctionDetails[$1] ? $1 : currentFunctionDetails[$1];
+        const val2 =  !currentFunctionDetails[$3] ? $3 : currentFunctionDetails[$3];
+         $$ = val1+val2;
+        }
+        else
+        $$ = $1+$3
+      }
+
+  | e '-' e
+      {if(system.currentFunction) {
+        const currentFunctionDetails = system.functionDetail[system.currentFunction].values;
+        const val1 =  currentFunctionDetails[$1];
+        const val2 =  currentFunctionDetails[$3];
+         $$ = val1-val2;
+        }
+        else
+        $$ = $1-$3
+      }
 
   |FUNCTION VARIABLE FUNCTION-ARGUMENT 
     {
-      system.functionDetail = {name: $2}
+      system.functionDetail = {...system.functionDetail, [$2]: {}}
+      system.currentFunction = $2;
       system.isFunctionPresent = true;
     }
 
@@ -73,25 +95,37 @@ e
     {}    
 
   | e '=' e
-    { system.values[$1] = $3; $$ = $3 }
 
-  |STRING
-  {$$ = $1;}
+    {if(system.currentFunction)
+    {
+      const {currentFunction} = system;
+      system.functionDetail[currentFunction].values = {...system.functionDetail[currentFunction].values, [$1]  : $3}
+    }
+    else
+      system.values[$1] = $3; $$ = $3 }
+
+  | STRING
+    {$$ = $1;}
   
   | CONSOLE e 
-    {if((!system.isFunctionPresent) ||  (system.isFunctionPresent && system.isFunctionCalled)) 
-      {
-        console.log($2)
-      }
+    {
+      const {isFunctionPresent, isFunctionCalled} = system;
+      if((!isFunctionPresent) || (isFunctionPresent && isFunctionCalled)) 
+      console.log($2)
     }
 
   | VARIABLE FUNCTION-ARGUMENT
-    { 
-      $$ = system.functionDetail.result;
+    {
       system.isFunctionCalled = true;
+      $$ = system.functionDetail[$1].result;
+
     }
 
   | RETURN e ';'
-    { system.functionDetail.result = $2}
+    { 
+      const {currentFunction} = system;
+      system.functionDetail[currentFunction].result = $2;
+      system.currentFunction = "";
+      }
 
   ;

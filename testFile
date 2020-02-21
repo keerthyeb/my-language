@@ -4,12 +4,18 @@ fn sum() {
   return a +b;
 };
 
-print sum();
 
-fn summ() {
- let c = 1;
- return c;
+fn diff() {
+  let a = 1;
+  let b =20;
+  return a+b;
 };
 
-let result = summ();
-print result
+fn mul() {
+  return diff();
+};
+
+let result =  diff();
+let n=1;
+print n + result;
+print mul()

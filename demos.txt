@@ -1,0 +1,74 @@
+// demo1
+fn sum() {
+  let a = 1;
+  let b =2;
+  return a +b;
+};
+
+fn diff() {
+  let a = 1;
+  let b =20;
+  return a-b;
+};
+
+fn mul() {
+  return diff();
+};
+
+let result =  diff();
+let n=1;
+print n + result;
+print mul()
+
+// demo2
+
+fn sum() {
+  let a =1;
+  let b=2;
+  return a +b;
+};
+
+fn diff () {
+  let a =100;
+  let b = 50;
+  return a-b;
+};
+
+fn composedSum () {
+  let a  =sum();
+  let b = sum();
+  return a+b;
+};
+
+let sumResult = sum();
+let diffResult = diff();
+let composedResult = composedSum();
+print sumResult;
+print diffResult;
+print sumResult + diffResult;
+print composedResult
+
+//demo3
+
+fn sum() {
+  let c =1;
+  let d=2;
+  return c +d;
+};
+
+fn composedSum () {
+  let a  =sum();
+  let b = sum();
+  let c = a + b;
+  return c + sum() + sum();
+};
+
+let composedResult = composedSum();
+print composedResult
+
+//demo 4
+
+let a = 2;
+print a;
+print 6 + a;
+print 7 + s9
